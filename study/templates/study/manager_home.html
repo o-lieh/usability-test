@@ -1,0 +1,49 @@
+{% extends "study/base.html" %}
+{% block title %}پنل نتایج{% endblock %}
+{% block content %}
+<main class="page">
+  <header class="bar">
+    <h1>شرکت‌کنندگان</h1>
+    <nav>
+      <a class="btn" href="{% url 'manager_export' %}">دریافت CSV</a>
+      <a class="btn" href="{% url 'manager_logout' %}">خروج</a>
+    </nav>
+  </header>
+
+  <form method="post" action="{% url 'manager_create' %}">
+    {% csrf_token %}
+    <button class="btn primary" type="submit">افزودن شرکت‌کننده جدید</button>
+  </form>
+
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>کد</th><th>وضعیت</th><th>کارهای انجام‌شده</th><th>امتیاز</th><th>لینک دعوت</th><th></th></tr></thead>
+    <tbody>
+    {% for s in sessions %}
+      <tr>
+        <td>{{ s.code }}</td>
+        <td>{{ s.state_label }}</td>
+        <td>{{ s.done_count }} از {{ total }}{% if s.failed_count %} ({{ s.failed_count }} ناموفق){% endif %}</td>
+        <td>{{ s.rating|default:"—" }}</td>
+        <td><button class="btn small" type="button" data-copy="{{ s.invite_url }}">کپی لینک</button></td>
+        <td><a href="{% url 'manager_detail' s.pk %}">جزئیات و ضبط‌ها</a></td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="6">هنوز شرکت‌کننده‌ای نیست. با دکمه‌ی بالا اولین لینک را بسازید.</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+</main>
+<script>
+  // Copy an invite link to the clipboard.
+  document.querySelectorAll("[data-copy]").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      navigator.clipboard.writeText(btn.dataset.copy).then(function () {
+        var old = btn.textContent; btn.textContent = "کپی شد ✓";
+        setTimeout(function () { btn.textContent = old; }, 1500);
+      });
+    });
+  });
+</script>
+{% endblock %}

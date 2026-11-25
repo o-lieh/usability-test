@@ -1,0 +1,19 @@
+services:
+  usability:
+    build: .
+    container_name: usability-test
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATA_DIR: /data
+    volumes:
+      - usability_data:/data
+    networks:
+      - edge
+
+volumes:
+  usability_data:
+
+networks:
+  edge:
+    external: true               # created once on the server: docker network create edge

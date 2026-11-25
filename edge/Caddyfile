@@ -1,0 +1,27 @@
+{
+	email {$ACME_EMAIL}
+}
+
+# 1) Clean Keshavarzyar: never used by test participants, never framed.
+{$CLEAN_HOST} {
+	reverse_proxy farmapp-web:80
+}
+www.{$CLEAN_HOST} {
+	redir https://{$CLEAN_HOST}{uri} permanent
+}
+
+# 2) Throwaway demo copy of Keshavarzyar (own backend + own database), used only for the test.
+#    Only the usability-test site may embed it in an iframe.
+{$DEMO_HOST} {
+	reverse_proxy farmapp-demo-web:80
+	header {
+		-X-Frame-Options
+		Content-Security-Policy "frame-ancestors 'self' https://{$TEST_HOST}"
+	}
+}
+
+# 3) Usability-test site (task panel + recording)
+{$TEST_HOST} {
+	encode zstd gzip
+	reverse_proxy usability-test:8000
+}

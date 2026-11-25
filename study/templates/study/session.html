@@ -1,0 +1,100 @@
+{% extends "study/base.html" %}
+{% load static %}
+{% block bodyclass %}runner{% endblock %}
+{% block content %}
+
+<!-- 1. Welcome and consent -->
+<main id="stage-welcome" class="page narrow">
+  <h1>آزمون کاربردپذیری کشاورزیار</h1>
+  <p>از شما برای کمک به بهتر شدن اپلیکیشن کشاورزیار سپاسگزاریم. در این آزمون چند کار ساده را در اپلیکیشن انجام می‌دهید. ما خودِ اپلیکیشن را می‌سنجیم، نه شما؛ اگر جایی کار سخت بود، همان را برایمان بنویسید.</p>
+
+  <ol class="steps">
+    <li>بهتر است از رایانه با مرورگر Chrome یا Edge و اینترنت پایدار استفاده کنید. آزمون حدود ۴۵ تا ۶۰ دقیقه طول می‌کشد.</li>
+    <li>پس از زدن دکمه‌ی شروع، مرورگر اجازه‌ی اشتراک‌گذاری صفحه را می‌پرسد. همین زبانه (This tab) را انتخاب کنید و تأیید کنید.</li>
+    <li>کارها یکی‌یکی در کنار صفحه نمایش داده می‌شوند. پس از انجام هر کار «انجام شد» را بزنید. اگر نتوانستید، «نتوانستم انجام دهم» را بزنید و دلیل را بنویسید.</li>
+    <li>برای ثبت‌نام می‌توانید اطلاعات فرضی وارد کنید. نیازی به اطلاعات شخصی واقعی نیست.</li>
+    <li>اگر موافق باشید، هنگام کار با صدای بلند بگویید چه می‌بینید و چه چیزی برایتان گیج‌کننده است.</li>
+  </ol>
+
+  <p id="no-screen-note" class="note" hidden>مرورگر شما ضبط صفحه را پشتیبانی نمی‌کند (مثلاً در موبایل). می‌توانید ادامه دهید؛ در این حالت فقط صدا (در صورت موافقت) ضبط می‌شود. اگر امکانش هست از رایانه استفاده کنید.</p>
+
+  <div class="stack consent">
+    <label id="consent-screen-row"><input type="checkbox" id="consent-screen"> با ضبط تصویر همین زبانه در طول آزمون موافقم. ضبط‌ها فقط برای تیم پروژه و برای ارزیابی اپلیکیشن استفاده می‌شوند.</label>
+    <label><input type="checkbox" id="consent-audio"> (اختیاری) با ضبط صدای میکروفن هم موافقم.</label>
+  </div>
+
+  {% if started %}<p class="note">قبلاً آزمون را شروع کرده‌اید. با دکمه‌ی زیر از همان‌جا ادامه می‌دهید.</p>{% endif %}
+  <p id="welcome-error" class="error" role="alert" hidden></p>
+  <button id="btn-start" class="btn primary big" type="button">{% if started %}ادامه‌ی آزمون{% else %}شروع آزمون{% endif %}</button>
+</main>
+
+<!-- 2. Test run: task panel + Keshavarzyar in an iframe -->
+<div id="stage-run" class="layout" hidden>
+  <aside id="panel" aria-label="کارهای آزمون">
+    <div class="panel-head">
+      <span id="counter"></span>
+      <div id="dots" class="dots" role="group" aria-label="پیمایش کارها"></div>
+    </div>
+    <p id="task-text" class="task-text"></p>
+
+    <div class="row">
+      <button id="btn-done" class="btn status done" type="button">انجام شد ✓</button>
+      <button id="btn-failed" class="btn status failed" type="button">نتوانستم انجام دهم</button>
+    </div>
+
+    <label for="comment">مشکل یا نظر شما درباره‌ی این کار (اختیاری)</label>
+    <textarea id="comment" rows="5" placeholder="هر مشکل، سردرگمی یا پیشنهادی که داشتید اینجا بنویسید…"></textarea>
+    <span id="save-state" class="muted" aria-live="polite"></span>
+
+    <div class="row nav">
+      <button id="btn-prev" class="btn" type="button">کار قبلی</button>
+      <button id="btn-next" class="btn primary" type="button">کار بعدی</button>
+    </div>
+  </aside>
+  <iframe id="app-frame" title="کشاورزیار"></iframe>
+</div>
+
+<!-- 3. Sending recording -->
+<main id="stage-sending" class="page narrow" hidden>
+  <h1>در حال ارسال ضبط…</h1>
+  <p>لطفاً این صفحه را نبندید.</p>
+</main>
+
+<!-- 4. Final questions -->
+<main id="stage-finish" class="page narrow" hidden>
+  <h1>چند سؤال پایانی</h1>
+  <div class="stack">
+    <p id="rating-label">استفاده از اپلیکیشن را در مجموع چقدر آسان یافتید؟ (۱ = خیلی سخت، ۵ = خیلی آسان)</p>
+    <div id="rating" class="rating" role="radiogroup" aria-labelledby="rating-label">
+      <button type="button" role="radio" aria-checked="false" data-value="1">۱</button>
+      <button type="button" role="radio" aria-checked="false" data-value="2">۲</button>
+      <button type="button" role="radio" aria-checked="false" data-value="3">۳</button>
+      <button type="button" role="radio" aria-checked="false" data-value="4">۴</button>
+      <button type="button" role="radio" aria-checked="false" data-value="5">۵</button>
+    </div>
+    <label for="suggestions">پیشنهاد یا نظر دیگری دارید؟</label>
+    <textarea id="suggestions" rows="5"></textarea>
+    <p id="finish-error" class="error" role="alert" hidden></p>
+    <button id="btn-submit" class="btn primary big" type="button">ارسال و پایان</button>
+  </div>
+</main>
+
+<!-- 5. Thanks -->
+<main id="stage-thanks" class="page narrow" hidden>
+  <h1>آزمون به پایان رسید</h1>
+  <p>از وقتی که گذاشتید سپاسگزاریم. می‌توانید این صفحه را ببندید.</p>
+</main>
+
+<!-- Shown when the participant stops screen sharing mid-test -->
+<div id="overlay-lost" class="overlay" role="alertdialog" aria-labelledby="lost-title" hidden>
+  <div class="dialog">
+    <h2 id="lost-title">اشتراک‌گذاری صفحه متوقف شد</h2>
+    <p>برای ادامه‌ی آزمون، ضبط را دوباره شروع کنید و همین زبانه را انتخاب کنید.</p>
+    <p id="lost-error" class="error" hidden></p>
+    <button id="btn-resume" class="btn primary big" type="button">ادامه‌ی ضبط</button>
+  </div>
+</div>
+
+{{ cfg|json_script:"cfg" }}
+{% endblock %}
+{% block scripts %}<script src="{% static 'study/runner.js' %}"></script>{% endblock %}

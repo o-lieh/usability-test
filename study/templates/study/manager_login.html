@@ -1,0 +1,14 @@
+{% extends "study/base.html" %}
+{% block title %}ورود مدیر{% endblock %}
+{% block content %}
+<main class="page narrow">
+  <h1>ورود به پنل نتایج</h1>
+  <form method="post" class="stack">
+    {% csrf_token %}
+    <label for="password">رمز عبور</label>
+    <input id="password" name="password" type="password" autofocus required>
+    {% if error %}<p class="error">{{ error }}</p>{% endif %}
+    <button class="btn primary" type="submit">ورود</button>
+  </form>
+</main>
+{% endblock %}
