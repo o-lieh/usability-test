@@ -23,18 +23,21 @@
   const rec = { recorder: null, display: null, mic: null, queue: Promise.resolve() };
 
   // ---------------------------------------------------------------- server calls
+  let lastError = ""; // reason of the last failed call, shown to the participant
   async function postJson(path, body, retries = 3) {
     for (let i = 0; i <= retries; i++) {
       try {
-        const r = await fetch(`/api/${cfg.token}/${path}`, {
+        // Django routes end with "/"; without it Django redirects and browsers turn the POST into a GET.
+        const r = await fetch(`/api/${cfg.token}/${path}/`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(body || {}),
         });
         if (r.ok) return await r.json();
+        lastError = `HTTP ${r.status}`;
         if (r.status >= 400 && r.status < 500) return null; // not retryable
       } catch (_) {
-        /* network error: retry below */
+        lastError = "network";
       }
       await sleep(500 * 2 ** i);
     }
@@ -214,7 +217,7 @@
     if (!begun) {
       stopStream(media.display);
       stopStream(media.mic);
-      showWelcomeError("اتصال به سرور برقرار نشد. اینترنت را بررسی و دوباره تلاش کنید.");
+      showWelcomeError(`ارتباط با سرور ناموفق بود (${lastError}). اینترنت را بررسی و دوباره تلاش کنید.`);
       btn.disabled = false;
       return;
     }
