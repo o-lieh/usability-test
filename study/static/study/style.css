@@ -1,3 +1,12 @@
+/* Vazirmatn (SIL OFL, see Vazirmatn-OFL.txt), self-hosted variable font. */
+@font-face {
+  font-family: "Vazirmatn";
+  src: url("Vazirmatn-Variable.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* Palette: slate-green ink on a cool light ground, one pine accent, amber for "could not do". */
 :root {
   --bg: #f2f5f3;
@@ -21,7 +30,7 @@
 html, body { margin: 0; height: 100%; }
 body {
   background: var(--bg); color: var(--ink);
-  font: 17px/1.8 Tahoma, "Segoe UI", system-ui, sans-serif;
+  font: 17px/1.9 "Vazirmatn", Tahoma, "Segoe UI", system-ui, sans-serif;
 }
 h1 { font-size: 1.6rem; line-height: 1.4; margin: 0 0 .75rem; }
 h2 { font-size: 1.2rem; margin: 2rem 0 .5rem; }
